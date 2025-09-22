@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarChart,
   Bar,
@@ -14,41 +14,51 @@ import {
   Cell,
   LineChart,
   Line,
-} from "recharts"
+} from "recharts";
 
 interface ChartsProps {
   distributions: {
-    status: Array<{ _id: string; count: number }>
-    program: Array<{ _id: string; count: number }>
-    priority: Array<{ _id: string; count: number }>
-  }
+    status: Array<{ _id: string; count: number }>;
+    program: Array<{ _id: string; count: number }>;
+    priority: Array<{ _id: string; count: number }>;
+  };
   trends: {
-    daily: Array<{ _id: string; count: number }>
-  }
+    daily: Array<{ _id: string; count: number }>;
+  };
 }
 
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"]
+const COLORS = [
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#06b6d4",
+];
 
 export function Charts({ distributions, trends }: ChartsProps) {
   const statusData = distributions.status.map((item) => ({
     name: item._id.replace("_", " ").toUpperCase(),
     value: item.count,
-  }))
+  }));
 
   const programData = distributions.program.map((item) => ({
     name: item._id.toUpperCase(),
     value: item.count,
-  }))
+  }));
 
   const priorityData = distributions.priority.map((item) => ({
     name: item._id.toUpperCase(),
     value: item.count,
-  }))
+  }));
 
   const trendData = trends.daily.map((item) => ({
-    date: new Date(item._id).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    date: new Date(item._id).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    }),
     count: item.count,
-  }))
+  }));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -64,13 +74,18 @@ export function Charts({ distributions, trends }: ChartsProps) {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) =>
+                  `${name} ${((percent as number) * 100).toFixed(0)}%`
+                }
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
               >
                 {statusData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip />
@@ -124,11 +139,16 @@ export function Charts({ distributions, trends }: ChartsProps) {
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="count" stroke="#8b5cf6" strokeWidth={2} />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#8b5cf6"
+                strokeWidth={2}
+              />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

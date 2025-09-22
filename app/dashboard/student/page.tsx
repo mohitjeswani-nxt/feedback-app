@@ -2,19 +2,40 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DynamicFeedbackForm } from "@/components/feedback/dynamic-feedback-form";
 import { FeedbackSuccess } from "@/components/feedback/feedback-success";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { Plus, Search, Filter, FileText, Clock, CheckCircle } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Filter,
+  FileText,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
 
 export default function StudentDashboard() {
   const { user } = useUser();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("submit");
   const [showSuccess, setShowSuccess] = useState(false);
   const [successTicketId, setSuccessTicketId] = useState("");
@@ -141,7 +162,9 @@ export default function StudentDashboard() {
     <div className="container mx-auto p-6 space-y-6">
       <DashboardHeader
         title="Student Dashboard"
-        description={`Welcome back, ${user?.firstName || "Student"}! Submit feedback and track your requests.`}
+        description={`Welcome back, ${
+          user?.firstName || "Student"
+        }! Submit feedback and track your requests.`}
       />
 
       {userProfile?.program && (
@@ -155,7 +178,11 @@ export default function StudentDashboard() {
         </div>
       )}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="submit" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
@@ -177,12 +204,19 @@ export default function StudentDashboard() {
           ) : (
             <>
               {userProfile.program ? (
-                <DynamicFeedbackForm program={userProfile.program} onSubmitSuccess={handleSubmitSuccess} />
+                <DynamicFeedbackForm
+                  program={userProfile.program}
+                  onSubmitSuccess={handleSubmitSuccess}
+                />
               ) : (
                 <Card>
                   <CardContent className="text-center py-12">
-                    <p className="text-muted-foreground mb-4">Please complete your profile setup to submit feedback.</p>
-                    <Button onClick={() => (window.location.href = "/profile-setup")}>Complete Profile</Button>
+                    <p className="text-muted-foreground mb-4">
+                      Please complete your profile setup to submit feedback.
+                    </p>
+                    <Button onClick={() => router.push("/profile-setup")}>
+                      Complete Profile
+                    </Button>
                   </CardContent>
                 </Card>
               )}
@@ -194,7 +228,9 @@ export default function StudentDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>My Feedback History</CardTitle>
-              <CardDescription>Track the status of your submitted feedback</CardDescription>
+              <CardDescription>
+                Track the status of your submitted feedback
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -229,30 +265,50 @@ export default function StudentDashboard() {
                 <div className="text-center py-12">
                   <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    {feedback.length === 0 ? "No feedback submitted yet" : "No feedback matches your filters"}
+                    {feedback.length === 0
+                      ? "No feedback submitted yet"
+                      : "No feedback matches your filters"}
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {filteredFeedback.map((item) => (
-                    <Card key={item.ticketId} className="hover:shadow-md transition-shadow">
+                    <Card
+                      key={item.ticketId}
+                      className="hover:shadow-md transition-shadow"
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between mb-3">
                           <div>
                             <div className="flex items-center gap-2 mb-1">
-                              <code className="text-sm font-mono bg-muted px-2 py-1 rounded">{item.ticketId}</code>
+                              <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                                {item.ticketId}
+                              </code>
                               <Badge className={getStatusColor(item.status)}>
                                 {getStatusIcon(item.status)}
-                                <span className="ml-1 capitalize">{item.status.replace("_", " ")}</span>
+                                <span className="ml-1 capitalize">
+                                  {item.status.replace("_", " ")}
+                                </span>
                               </Badge>
                             </div>
                             <h3 className="font-medium">
                               {item.course} - {item.unit}
                             </h3>
-                            <p className="text-sm text-muted-foreground">{item.topic}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {item.topic}
+                            </p>
                           </div>
                           <div className="text-right text-sm text-muted-foreground">
-                            <p>{new Date(item.submittedAt).toLocaleDateString()}</p>
+                            <p>
+                              {new Date(item.submittedAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
+                            </p>
                             {item.priority && (
                               <Badge variant="outline" className="mt-1">
                                 {item.priority}
@@ -261,12 +317,18 @@ export default function StudentDashboard() {
                           </div>
                         </div>
 
-                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.issueDescription}</p>
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                          {item.issueDescription}
+                        </p>
 
                         {item.resolutionText && (
                           <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-3">
-                            <p className="text-sm font-medium text-green-800 mb-1">Resolution:</p>
-                            <p className="text-sm text-green-700">{item.resolutionText}</p>
+                            <p className="text-sm font-medium text-green-800 mb-1">
+                              Resolution:
+                            </p>
+                            <p className="text-sm text-green-700">
+                              {item.resolutionText}
+                            </p>
                           </div>
                         )}
                       </CardContent>

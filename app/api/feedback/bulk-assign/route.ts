@@ -1,28 +1,34 @@
-import { auth } from "@clerk/nextjs/server"
-import { type NextRequest, NextResponse } from "next/server"
-import { DatabaseService } from "@/lib/db-utils"
+import { auth } from "@clerk/nextjs/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { DatabaseService } from "@/lib/db-utils";
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth()
+    const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await DatabaseService.getUserByClerkId(userId)
+    const user = await DatabaseService.getUserByClerkId(userId);
     if (!user || !["auditor", "admin", "co_admin"].includes(user.role)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { ticketIds, teamId, podId, priority, kpiCategory, slaHours } = await request.json()
+    const { ticketIds, teamId, podId, priority, kpiCategory, slaHours } =
+      await request.json();
 
     if (!ticketIds?.length || !teamId || !priority || !slaHours) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
-    const assignedAt = new Date()
-    const slaDeadline = new Date(assignedAt.getTime() + slaHours * 60 * 60 * 1000)
+    const assignedAt = new Date();
+    const slaDeadline = new Date(
+      assignedAt.getTime() + slaHours * 60 * 60 * 1000
+    );
 
     const results = await Promise.all(
       ticketIds.map(async (ticketId: string) => {
@@ -36,7 +42,7 @@ export async function POST(request: NextRequest) {
           auditorId: userId,
           assignedAt,
           slaDeadline,
-        })
+        });
 
         if (success) {
           // Log the assignment
@@ -54,26 +60,28 @@ export async function POST(request: NextRequest) {
               slaHours,
               bulkOperation: true,
             },
-          })
+          });
         }
 
-        return { ticketId, success }
-      }),
-    )
+        return { ticketId, success };
+      })
+    );
 
-    const successCount = results.filter((r) => r.success).length
-    const failureCount = results.length - successCount
+    const successCount = results.filter((r) => r.success).length;
+    const failureCount = results.length - successCount;
 
     // Create notification for team lead
-    const team = await DatabaseService.getTeamById(teamId)
+    const team = await DatabaseService.getTeamById(teamId);
     if (team?.leadId && successCount > 0) {
       await DatabaseService.createNotification({
         userId: team.leadId,
         type: "feedback_assigned",
         title: "Bulk Feedback Assignment",
         message: `${successCount} feedback items have been assigned to your team`,
-        isRead: false,
-      })
+        priority: "high",
+        read: false,
+        updatedAt: new Date(),
+      });
     }
 
     return NextResponse.json({
@@ -81,9 +89,12 @@ export async function POST(request: NextRequest) {
       assigned: successCount,
       failed: failureCount,
       results,
-    })
+    });
   } catch (error) {
-    console.error("Error bulk assigning feedback:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Error bulk assigning feedback:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

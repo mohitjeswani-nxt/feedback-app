@@ -1,0 +1,206 @@
+Feedback Management WebApp
+
+Goal:
+Build a standalone feedback management system where students can submit feedback (Content Errors, Feature Requests, Bug Reports) across multiple programs (e.g., NIAT, Intensive, Academy). Feedbacks flow through auditors, teams, and leads until resolution. Admins and co-admins oversee the system with full modular dashboards and dynamic form-building.
+
+🛠️ Tech Stack
+
+Frontend: Next.js + TailwindCSS
+
+Backend: Next.js API Routes
+
+Database: MongoDB (Mongoose models)
+
+Auth: Clerk
+
+File Storage: UploadThing (JPEG, JPG, PNG for screenshots; MP4, MKV for videos; Max 5 screenshots, 1 video ≤ 20MB)
+
+👥 Roles & Permissions
+
+Student
+
+Submit feedback (form depends on Program type).
+
+Upload multiple screenshots (max 5) or one video (≤20MB).
+
+Receive Ticket ID.
+
+Track status in "My Feedback" portal (with filters: by Ticket ID, course, status).
+
+Auditor
+
+View all submitted feedback.
+
+Assign feedback to Team & POD.
+
+Tag KPI category, set Priority, define SLA (from assignment date).
+
+Cannot close issues directly.
+
+Team Lead / POD Lead
+
+Receive tickets from Auditor.
+
+Assign tickets to Team Members.
+
+Approve/reject resolutions submitted by members.
+
+If rejected → send back to same member or reassign to different member.
+
+Team Member
+
+Update feedback status: Pending (default), In Progress, Resolved, No Issue Found.
+
+Provide resolution details: resolution text, days taken, actual resolution date, preventive measures, optional comments.
+
+AI Suggestions available: proposed solutions + preventive measures.
+
+Admin / Co-Admin
+
+Same privileges, except only Admin can promote/demote co-admins.
+
+Can act as Auditor (assign feedback, set KPIs, SLA).
+
+Can override Priority and SLA.
+
+Can manage Teams, Pods, Users.
+
+Admin only: Promote/demote co-admins.
+
+Audit Trail: All admin/co-admin actions tracked separately.
+
+Dynamic Form Builder: Create/update/delete fields, manage dropdown options, preview forms.
+
+Can add new Program Types dynamically with custom form templates.
+
+📑 Program Feedback Forms
+
+NIAT
+
+Admission Year, University (depends on year), Student Name, Student/Employee ID, Email, Contact, Reported By, Course, Unit, Topic, Unit/Discussion Link, Unit Type (dropdown), Issue Description, Question Link, Screenshots/Videos, Suggested Solution.
+
+Intensive
+
+Student Name, Email, Contact, Course, Unit, Topic, Unit/Discussion Link, Unit Type (dropdown), Issue Description, Question Link, Screenshots/Videos, Suggested Solution.
+
+Academy
+
+Track Type (Smart/Genius), Student Name, Email, Contact, Course, Unit, Topic, Unit/Discussion Link, Unit Type (dropdown), Issue Description, Question Link, Screenshots/Videos, Suggested Solution.
+
+Admin-defined Future Programs
+
+Custom fields via Dynamic Form Builder.
+
+🔄 Workflow
+
+Submission: Student submits → Ticket ID generated.
+
+Audit: Auditor assigns → Team + POD, sets KPI tag, category, Priority, SLA.
+
+SLA timer starts from assignment date.
+
+Team Lead: Assigns ticket → Member, sets target resolution date.
+
+Member: Works on ticket → updates status + resolution details.
+
+AI suggestions available.
+
+Lead Approval:
+
+If Resolved/No Issue Found → goes to Lead for approval.
+
+If Approved → ticket = Completed.
+
+If Rejected → sent back (same/different member).
+
+Closure: Once Lead approves → Ticket closed, history logged.
+
+📊 Dashboards
+
+Student Dashboard
+
+Submit feedback (conditional forms).
+
+"My Feedback" list with filters (by ID, course, status).
+
+Auditor Dashboard
+
+Feedback queue (all submissions).
+
+Filters: program, KPI, priority, status.
+
+Assignment panel for Teams/Pods.
+
+Team Lead Dashboard
+
+Kanban View (Pending, In Progress, Resolved, No Issue).
+
+Team workload overview.
+
+Approval panel for resolutions.
+
+Team Member Dashboard
+
+Assigned tasks list.
+
+Status update + resolution entry form.
+
+AI-powered resolution suggestions.
+
+Admin / Co-Admin Dashboard (Modular)
+
+Feedback Management (queue, override controls, bulk assignment, exports).
+
+Form Builder (drag/drop fields, preview, versioning).
+
+Teams & Pods (create/edit pods, assign leads/members, workload distribution).
+
+Users & Roles (manage all users; only Admin can manage co-admin roles).
+
+Reports & Analytics (SLA compliance, avg resolution, issue type stats; export CSV).
+
+Audit Trail (searchable logs of all actions: submissions, assignments, status changes, admin overrides, role changes, form edits).
+
+Notification Hub (configure global email/in-app notifications, broadcast announcements).
+
+🔔 Notifications
+
+Email + In-App notifications at:
+
+Submission confirmation (Ticket ID).
+
+Assignment to team.
+
+Status change.
+
+Resolution approved/rejected.
+
+Admins can send system-wide broadcast messages.
+
+📈 Analytics & Reporting
+
+SLA compliance rate.
+
+Avg resolution time (per team/pod).
+
+Issues by program, course, or type.
+
+Export reports as CSV.
+
+📜 Audit Trail
+
+Every action logged with: who, when, what.
+
+Includes: submission, assignment, reassignment, status changes, resolution approvals/rejections, SLA/priority overrides, admin form changes, co-admin promotions/demotions.
+
+Separate section for Admin/Co-Admin changes.
+
+✨ Extra Features
+
+AI Suggestions: For Team Members (resolution + preventive measures).
+
+Similar Feedback Detection: Show related tickets to students (prevent duplicates).
+
+Bulk Assignment: Admins can select multiple tickets → assign in one go.
+
+Impersonation Mode: Admin can view dashboards as another role for debugging.
