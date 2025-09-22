@@ -1,4 +1,27 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
+
+export interface Notification {
+  _id?: string;
+  userId: string;
+  title: string;
+  message: string;
+  type:
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "system"
+    | "feedback_submitted"
+    | "feedback_assigned"
+    | "resolution_approved"
+    | "resolution_rejected";
+  priority: "low" | "medium" | "high" | "urgent";
+  read: boolean;
+  readAt?: Date;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const NotificationSchema = new mongoose.Schema(
   {
@@ -38,7 +61,9 @@ const NotificationSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
-export const Notification = mongoose.models.Notification || mongoose.model("Notification", NotificationSchema)
+export const Notification =
+  mongoose.models.Notification ||
+  mongoose.model("Notification", NotificationSchema);

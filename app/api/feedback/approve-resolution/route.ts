@@ -1,49 +1,56 @@
-import { auth } from "@clerk/nextjs/server"
-import { type NextRequest, NextResponse } from "next/server"
-import { DatabaseService } from "@/lib/db-utils"
+import { auth } from "@clerk/nextjs/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { DatabaseService } from "@/lib/db-utils";
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth()
+    const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await DatabaseService.getUserByClerkId(userId)
+    const user = await DatabaseService.getUserByClerkId(userId);
     if (!user || !["team_lead", "admin", "co_admin"].includes(user.role)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { ticketId, approved, leadComments, reassignTo } = await request.json()
+    const { ticketId, approved, leadComments, reassignTo } =
+      await request.json();
 
     if (!ticketId || approved === undefined) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
     const updates: any = {
       leadApprovalStatus: approved ? "approved" : "rejected",
       leadComments,
-    }
+    };
 
     if (approved) {
-      updates.status = "completed"
-      updates.completedAt = new Date()
+      updates.status = "completed";
+      updates.completedAt = new Date();
     } else {
-      updates.status = "pending"
+      updates.status = "pending";
       if (reassignTo) {
-        updates.assignedMemberId = reassignTo
+        updates.assignedMemberId = reassignTo;
       }
     }
 
-    const success = await DatabaseService.updateFeedback(ticketId, updates)
+    const success = await DatabaseService.updateFeedback(ticketId, updates);
 
     if (!success) {
-      return NextResponse.json({ error: "Feedback not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Feedback not found" },
+        { status: 404 }
+      );
     }
 
     // Create notification for team member
-    const feedback = await DatabaseService.getFeedbackByTicketId(ticketId)
+    const feedback = await DatabaseService.getFeedbackByTicketId(ticketId);
     if (feedback?.assignedMemberId) {
       await DatabaseService.createNotification({
         userId: feedback.assignedMemberId,
@@ -52,9 +59,10 @@ export async function POST(request: NextRequest) {
         message: approved
           ? `Your resolution for ${ticketId} has been approved`
           : `Your resolution for ${ticketId} has been rejected. Please review and resubmit.`,
-        feedbackId: ticketId,
-        isRead: false,
-      })
+        read: false,
+        priority: "high",
+        updatedAt: new Date(),
+      });
     }
 
     // Log the approval/rejection
@@ -68,11 +76,14 @@ export async function POST(request: NextRequest) {
         leadComments,
         reassignTo: reassignTo || null,
       },
-    })
+    });
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error approving/rejecting resolution:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Error approving/rejecting resolution:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

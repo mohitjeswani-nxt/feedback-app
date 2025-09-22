@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { MetricsCards } from "@/components/analytics/metrics-cards";
 import { Charts } from "@/components/analytics/charts";
 import { ExportControls } from "@/components/analytics/export-controls";
@@ -123,12 +129,18 @@ export default function AnalyticsPage() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">Resolution Efficiency</h4>
-                      <p className="text-sm text-muted-foreground">Average time to resolve feedback</p>
+                      <p className="text-sm text-muted-foreground">
+                        Average time to resolve feedback
+                      </p>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold">{data.metrics.avgResolutionTime} days</div>
+                      <div className="text-2xl font-bold">
+                        {data.metrics.avgResolutionTime} days
+                      </div>
                       <div className="text-sm text-muted-foreground">
-                        {data.metrics.avgResolutionTime <= 3 ? "Excellent" : "Needs improvement"}
+                        {data.metrics.avgResolutionTime <= 3
+                          ? "Excellent"
+                          : "Needs improvement"}
                       </div>
                     </div>
                   </div>
@@ -136,12 +148,18 @@ export default function AnalyticsPage() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">SLA Performance</h4>
-                      <p className="text-sm text-muted-foreground">Percentage of feedback resolved within SLA</p>
+                      <p className="text-sm text-muted-foreground">
+                        Percentage of feedback resolved within SLA
+                      </p>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold">{data.metrics.slaComplianceRate}%</div>
+                      <div className="text-2xl font-bold">
+                        {data.metrics.slaComplianceRate}%
+                      </div>
                       <div className="text-sm text-muted-foreground">
-                        {data.metrics.slaComplianceRate >= 90 ? "On target" : "Below target"}
+                        {data.metrics.slaComplianceRate >= 90
+                          ? "On target"
+                          : "Below target"}
                       </div>
                     </div>
                   </div>
@@ -149,14 +167,19 @@ export default function AnalyticsPage() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">Workload Distribution</h4>
-                      <p className="text-sm text-muted-foreground">Active feedback requiring attention</p>
+                      <p className="text-sm text-muted-foreground">
+                        Active feedback requiring attention
+                      </p>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold">
-                        {data.metrics.totalFeedback - data.metrics.resolvedFeedback}
+                        {data.metrics.totalFeedback -
+                          data.metrics.resolvedFeedback}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        {data.metrics.overdueFeedback > 0 ? `${data.metrics.overdueFeedback} overdue` : "All on track"}
+                        {data.metrics.overdueFeedback > 0
+                          ? `${data.metrics.overdueFeedback} overdue`
+                          : "All on track"}
                       </div>
                     </div>
                   </div>

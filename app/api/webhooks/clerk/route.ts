@@ -7,7 +7,9 @@ export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_SECRET_KEY;
 
   if (!WEBHOOK_SECRET) {
-    throw new Error("Please add CLERK_SECRET_KEY from Clerk Dashboard to .env or .env.local");
+    throw new Error(
+      "Please add CLERK_SECRET_KEY from Clerk Dashboard to .env or .env.local"
+    );
   }
 
   // Get the headers
@@ -58,8 +60,6 @@ export async function POST(req: Request) {
         email: email_addresses[0]?.email_address || "",
         name: `${first_name || ""} ${last_name || ""}`.trim(),
         role: "student", // Default role
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
 
       console.log(`User ${id} created in database`);

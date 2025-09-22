@@ -1,36 +1,46 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
-import { connectDB } from "@/lib/mongodb"
-import { User } from "@/lib/models/User"
-import { Notification } from "@/lib/models/Notification"
-import { logAuditAction } from "@/lib/db-utils"
+import { type NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { connectDB } from "@/lib/mongodb";
+import { User } from "@/lib/models/User";
+import { Notification } from "@/lib/models/Notification";
+import { logAuditAction } from "@/lib/db-utils";
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth()
+    const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectDB()
+    await connectDB();
 
-    const currentUser = await User.findOne({ clerkId: userId })
+    const currentUser = await User.findOne({ clerkId: userId });
     if (!currentUser || !["admin", "co-admin"].includes(currentUser.role)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { title, message, targetRoles, priority = "medium" } = await request.json()
+    const {
+      title,
+      message,
+      targetRoles,
+      priority = "medium",
+      entityType = "user",
+      entityId,
+    } = await request.json();
 
     if (!title || !message) {
-      return NextResponse.json({ error: "Title and message are required" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Title and message are required" },
+        { status: 400 }
+      );
     }
 
     // Get target users based on roles
-    let targetUsers
+    let targetUsers;
     if (targetRoles && targetRoles.length > 0 && !targetRoles.includes("all")) {
-      targetUsers = await User.find({ role: { $in: targetRoles } })
+      targetUsers = await User.find({ role: { $in: targetRoles } });
     } else {
-      targetUsers = await User.find({})
+      targetUsers = await User.find({});
     }
 
     // Create notifications for all target users
@@ -41,24 +51,28 @@ export async function POST(request: NextRequest) {
       type: "system",
       priority,
       read: false,
-    }))
+    }));
 
-    await Notification.insertMany(notifications)
+    await Notification.insertMany(notifications);
 
     // Log audit action
     await logAuditAction(
-      currentUser._id,
-      "broadcast_notification",
-      `Sent broadcast notification "${title}" to ${targetUsers.length} users`,
-      { title, targetRoles, userCount: targetUsers.length },
-    )
+      currentUser.clerkId,
+      currentUser.role,
+      "broadcast_notification_sent",
+      entityType,
+      entityId
+    );
 
     return NextResponse.json({
       message: "Broadcast notification sent successfully",
       recipientCount: targetUsers.length,
-    })
+    });
   } catch (error) {
-    console.error("Error sending broadcast notification:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Error sending broadcast notification:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
