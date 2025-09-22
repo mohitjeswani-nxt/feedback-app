@@ -1,23 +1,25 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import type { FormField, FormTemplate } from "@/lib/models/Feedback"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FormFieldEditor } from "@/components/form-builder/form-field-editor"
-import { FormPreview } from "@/components/form-builder/form-preview"
-import { useToast } from "@/hooks/use-toast"
-import { Plus, Save } from "lucide-react"
+import { useState, useEffect } from "react";
+import type { FormField, FormTemplate } from "@/lib/models/Feedback";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FormFieldEditor } from "@/components/form-builder/form-field-editor";
+import { FormPreview } from "@/components/form-builder/form-preview";
+import { DashboardHeader } from "@/components/dashboard-header";
+import { useToast } from "@/hooks/use-toast";
+import { Plus, Save, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function FormBuilderPage() {
-  const { toast } = useToast()
-  const [templates, setTemplates] = useState<FormTemplate[]>([])
+  const { toast } = useToast();
+  const [templates, setTemplates] = useState<FormTemplate[]>([]);
   const [currentTemplate, setCurrentTemplate] = useState<Partial<FormTemplate>>({
     programType: "",
     name: "",
@@ -25,27 +27,27 @@ export default function FormBuilderPage() {
     fields: [],
     isActive: true,
     version: 1,
-  })
-  const [loading, setLoading] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
+  });
+  const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchTemplates()
-  }, [])
+    fetchTemplates();
+  }, []);
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch("/api/form-templates")
-      const data = await response.json()
-      setTemplates(data.templates || [])
+      const response = await fetch("/api/form-templates");
+      const data = await response.json();
+      setTemplates(data.templates || []);
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to fetch form templates",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const addField = () => {
     const newField: FormField = {
@@ -54,43 +56,43 @@ export default function FormBuilderPage() {
       type: "text",
       required: false,
       order: (currentTemplate.fields?.length || 0) + 1,
-    }
+    };
 
     setCurrentTemplate((prev) => ({
       ...prev,
       fields: [...(prev.fields || []), newField],
-    }))
-  }
+    }));
+  };
 
   const updateField = (index: number, updatedField: FormField) => {
     setCurrentTemplate((prev) => ({
       ...prev,
       fields: prev.fields?.map((field, i) => (i === index ? updatedField : field)) || [],
-    }))
-  }
+    }));
+  };
 
   const deleteField = (index: number) => {
     setCurrentTemplate((prev) => ({
       ...prev,
       fields: prev.fields?.filter((_, i) => i !== index) || [],
-    }))
-  }
+    }));
+  };
 
   const moveField = (index: number, direction: "up" | "down") => {
-    const fields = [...(currentTemplate.fields || [])]
-    const newIndex = direction === "up" ? index - 1 : index + 1
+    const fields = [...(currentTemplate.fields || [])];
+    const newIndex = direction === "up" ? index - 1 : index + 1;
 
     if (newIndex >= 0 && newIndex < fields.length) {
-      ;[fields[index], fields[newIndex]] = [fields[newIndex], fields[index]]
+      [fields[index], fields[newIndex]] = [fields[newIndex], fields[index]];
 
       // Update order values
       fields.forEach((field, i) => {
-        field.order = i + 1
-      })
+        field.order = i + 1;
+      });
 
-      setCurrentTemplate((prev) => ({ ...prev, fields }))
+      setCurrentTemplate((prev) => ({ ...prev, fields }));
     }
-  }
+  };
 
   const saveTemplate = async () => {
     if (!currentTemplate.programType || !currentTemplate.name || !currentTemplate.fields?.length) {
@@ -98,26 +100,26 @@ export default function FormBuilderPage() {
         title: "Validation Error",
         description: "Please fill in all required fields and add at least one form field",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const url = editingId ? `/api/form-templates/${editingId}` : "/api/form-templates"
-      const method = editingId ? "PUT" : "POST"
+      const url = editingId ? `/api/form-templates/${editingId}` : "/api/form-templates";
+      const method = editingId ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(currentTemplate),
-      })
+      });
 
       if (response.ok) {
         toast({
           title: "Success",
           description: `Form template ${editingId ? "updated" : "created"} successfully`,
-        })
+        });
 
         // Reset form
         setCurrentTemplate({
@@ -127,58 +129,66 @@ export default function FormBuilderPage() {
           fields: [],
           isActive: true,
           version: 1,
-        })
-        setEditingId(null)
-        fetchTemplates()
+        });
+        setEditingId(null);
+        fetchTemplates();
       } else {
-        throw new Error("Failed to save template")
+        throw new Error("Failed to save template");
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to save form template",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const editTemplate = (template: FormTemplate) => {
-    setCurrentTemplate(template)
-    setEditingId(template._id || null)
-  }
+    setCurrentTemplate(template);
+    setEditingId(template._id || null);
+  };
 
   const deleteTemplate = async (templateId: string) => {
     try {
       const response = await fetch(`/api/form-templates/${templateId}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
         toast({
           title: "Success",
           description: "Form template deleted successfully",
-        })
-        fetchTemplates()
+        });
+        fetchTemplates();
       } else {
-        throw new Error("Failed to delete template")
+        throw new Error("Failed to delete template");
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to delete form template",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Form Builder</h1>
-          <p className="text-muted-foreground">Create and manage dynamic feedback forms</p>
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard/admin">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Admin
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold">Form Builder</h1>
+            <p className="text-muted-foreground">Create and manage dynamic feedback forms</p>
+          </div>
         </div>
       </div>
 
@@ -294,8 +304,8 @@ export default function FormBuilderPage() {
                         fields: [],
                         isActive: true,
                         version: 1,
-                      })
-                      setEditingId(null)
+                      });
+                      setEditingId(null);
                     }}
                   >
                     Cancel
@@ -345,5 +355,5 @@ export default function FormBuilderPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { UserManagementTable } from "@/components/admin/user-management-table";
 import { AuditTrail } from "@/components/admin/audit-trail";
 import { BroadcastNotifications } from "@/components/admin/broadcast-notifications";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { Users, FileText, BarChart3, Shield, Bell, Database, UserCog } from "lucide-react";
+import { Users, FileText, BarChart3, Shield, Bell, Database, UserCog, Plus, Edit, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -147,16 +149,142 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="forms">
+        <TabsContent value="forms" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">Form Management</h2>
+              <p className="text-muted-foreground">Create and manage dynamic feedback forms for different programs</p>
+            </div>
+            <Link href="/dashboard/admin/form-builder">
+              <Button className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Create New Form
+              </Button>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="border-dashed border-2 hover:border-primary/50 transition-colors">
+              <CardContent className="flex flex-col items-center justify-center py-8">
+                <Database className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="font-semibold mb-2">NIAT Program Form</h3>
+                <p className="text-sm text-muted-foreground text-center mb-4">
+                  Standard feedback form for NIAT program students
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-dashed border-2 hover:border-primary/50 transition-colors">
+              <CardContent className="flex flex-col items-center justify-center py-8">
+                <Database className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="font-semibold mb-2">Intensive Program Form</h3>
+                <p className="text-sm text-muted-foreground text-center mb-4">
+                  Specialized form for intensive program participants
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-dashed border-2 hover:border-primary/50 transition-colors">
+              <CardContent className="flex flex-col items-center justify-center py-8">
+                <Database className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="font-semibold mb-2">Academy Program Form</h3>
+                <p className="text-sm text-muted-foreground text-center mb-4">
+                  Comprehensive form for academy program students
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           <Card>
             <CardHeader>
-              <CardTitle>Form Builder</CardTitle>
-              <p className="text-sm text-muted-foreground">Create and manage dynamic feedback forms</p>
+              <CardTitle>Form Templates Overview</CardTitle>
+              <p className="text-sm text-muted-foreground">Manage existing form templates and their configurations</p>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <Database className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Form builder interface will be loaded here</p>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                    <div>
+                      <p className="font-medium">NIAT Feedback Form v2.1</p>
+                      <p className="text-sm text-muted-foreground">Active • 8 fields • Last updated 2 days ago</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 bg-yellow-500 rounded-full"></div>
+                    <div>
+                      <p className="font-medium">Intensive Program Form v1.3</p>
+                      <p className="text-sm text-muted-foreground">Draft • 6 fields • Last updated 1 week ago</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                    <div>
+                      <p className="font-medium">Academy Program Form v1.0</p>
+                      <p className="text-sm text-muted-foreground">Active • 10 fields • Last updated 3 days ago</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
