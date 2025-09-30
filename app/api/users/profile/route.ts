@@ -19,7 +19,10 @@ export async function GET() {
     return NextResponse.json({ user });
   } catch (error) {
     console.error("Error fetching user profile:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -39,28 +42,30 @@ export async function PUT(request: NextRequest) {
     // Check if user exists, if not create them
     let user = await DatabaseService.getUserByClerkId(userId);
 
+    console.log("Current user data:", user);
+
     if (!user) {
       console.log(`User ${userId} not found, creating new user`);
       // Create user with basic info - we'll use minimal data since we don't have access to Clerk user here
-      try {
-        const newUser = await DatabaseService.createUser({
-          clerkId: userId,
-          email: "unknown@example.com", // Will be updated by webhook
-          name: "Unknown User", // Will be updated by webhook
-          role: "student", // Default role, will be updated below
-        });
-        user = newUser as any; // Type assertion to handle the return type
-      } catch (createError) {
-        console.error("Error creating user:", createError);
-        return NextResponse.json({ error: "Unable to create user" }, { status: 400 });
-      }
+      return NextResponse.json(
+        {
+          error: "User not found, please complete your profile after sign-up.",
+        },
+        { status: 404 }
+      );
     }
 
     const success = await DatabaseService.updateUser(userId, allowedUpdates);
 
     if (!success) {
-      console.error(`Failed to update user ${userId} with data:`, allowedUpdates);
-      return NextResponse.json({ error: "Failed to update user" }, { status: 400 });
+      console.error(
+        `Failed to update user ${userId} with data:`,
+        allowedUpdates
+      );
+      return NextResponse.json(
+        { error: "Failed to update user" },
+        { status: 400 }
+      );
     }
 
     // Log the update
@@ -77,10 +82,15 @@ export async function PUT(request: NextRequest) {
       })),
     });
 
-    console.log(`Successfully updated user ${userId} with role: ${updates.role}`);
+    console.log(
+      `Successfully updated user ${userId} with role: ${updates.role}`
+    );
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating user profile:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

@@ -86,6 +86,7 @@ export async function PUT(request: NextRequest) {
 
     const targetUser = await User.findById(targetUserId);
     if (!targetUser) {
+      console.log("Authenticated userId:", userId);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 

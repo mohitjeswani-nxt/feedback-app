@@ -5,11 +5,23 @@ import type React from "react";
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ProfileSetupPage() {
@@ -43,7 +55,10 @@ export default function ProfileSetupPage() {
       }
 
       // For students, validate additional required fields
-      if (formData.role === "student" && (!formData.program || !formData.studentId || !formData.contactNumber)) {
+      if (
+        formData.role === "student" &&
+        (!formData.program || !formData.studentId || !formData.contactNumber)
+      ) {
         toast({
           title: "Validation Error",
           description: "Please fill in all required fields for student role.",
@@ -61,7 +76,9 @@ export default function ProfileSetupPage() {
           studentId: formData.studentId,
           contactNumber: formData.contactNumber,
           ...(formData.program === "NIAT" && {
-            admissionYear: formData.admissionYear ? parseInt(formData.admissionYear) : undefined,
+            admissionYear: formData.admissionYear
+              ? parseInt(formData.admissionYear)
+              : undefined,
             university: formData.university,
           }),
         }),
@@ -89,7 +106,10 @@ export default function ProfileSetupPage() {
       console.error("Profile update error:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update profile. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -102,7 +122,9 @@ export default function ProfileSetupPage() {
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <CardTitle>Complete Your Profile</CardTitle>
-          <CardDescription>Please provide additional information to set up your account.</CardDescription>
+          <CardDescription>
+            Please provide additional information to set up your account.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -111,7 +133,9 @@ export default function ProfileSetupPage() {
                 <Label htmlFor="role">Role</Label>
                 <Select
                   value={formData.role}
-                  onValueChange={(value) => setFormData((prev) => ({ ...prev, role: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, role: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select your role" />
@@ -131,7 +155,9 @@ export default function ProfileSetupPage() {
                   <Label htmlFor="program">Program</Label>
                   <Select
                     value={formData.program}
-                    onValueChange={(value) => setFormData((prev) => ({ ...prev, program: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, program: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select your program" />
@@ -154,7 +180,12 @@ export default function ProfileSetupPage() {
                     <Input
                       id="studentId"
                       value={formData.studentId}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, studentId: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          studentId: e.target.value,
+                        }))
+                      }
                       placeholder="Enter your ID"
                     />
                   </div>
@@ -164,7 +195,12 @@ export default function ProfileSetupPage() {
                     <Input
                       id="contactNumber"
                       value={formData.contactNumber}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, contactNumber: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          contactNumber: e.target.value,
+                        }))
+                      }
                       placeholder="Enter your contact number"
                     />
                   </div>
@@ -178,7 +214,12 @@ export default function ProfileSetupPage() {
                         id="admissionYear"
                         type="number"
                         value={formData.admissionYear}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, admissionYear: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            admissionYear: e.target.value,
+                          }))
+                        }
                         placeholder="2024"
                         min="2020"
                         max="2030"
@@ -190,7 +231,12 @@ export default function ProfileSetupPage() {
                       <Input
                         id="university"
                         value={formData.university}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, university: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            university: e.target.value,
+                          }))
+                        }
                         placeholder="Enter your university"
                       />
                     </div>
@@ -199,7 +245,11 @@ export default function ProfileSetupPage() {
               </>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading || !formData.role}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading || !formData.role}
+            >
               {loading ? "Setting up..." : "Complete Setup"}
             </Button>
           </form>
